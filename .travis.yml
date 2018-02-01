@@ -1,0 +1,30 @@
+sudo: required
+
+language: go
+
+go:
+- 1.9
+
+services:
+- docker
+
+env:
+  global:
+  - secure: FVx2BuHjOwMXsGphuxuPAiAfjgbnGK6mYNLXFhQCOu2qygUxLqhBIi7QPt3W+RxOiIMWswNtUy6JgR75wWnPY9SrRl5N/yuTPZGn4LBWdmRUI55Oqy1LPZ2fbSRAAPELEH+4pgWxN0mJofNDomQap5zS6HOBPnnkcu91g9Xr+4gOBnMC6bPmf3TMNnIi4cQOu8g3ERKV/vJORWaV8JQIVkrmzRviz2T3KrnRKZ73RfvBqdAHeriEjoLZODLJ+wBTOC524G+hVZrWyhgjA6+XY5/BUMv3i+k6BUU3rxqIEpOQrSEA5PnEE1DjX2h3w5SpfpRxhULN/r8lFcWs6gjN5Msg5FLzwYrGmYaBeg1kAFHpTL9WDgcayJntIdXWxbiQ/tq+KgzQ7p/5SjYE/MjAeL2eh+/WPpRllh1FxKfTjBPJlbOts6ZUzZcjdcV9IvnsN9Bqu3pZGVS2USFzKahIP84bGi3l/BnReQwjDCp93tE2ctfanb+UglJA3sdymEZLvc32W00BJZODQzpqpKGAsYELf8Swyjf44a/0gY3lh8rEUMMWHu/HlP3VXk5fhnIPhKm2iEulUXUkslqfId6Fk0fbDzAx24htNlmJcK8Oexuc0r9+luPwhd58fex1MgBDmrnzqwxZs8cnbC8nidx532ZKkUrfaLDyC5Ub0HxMDLY=
+  - secure: bmj7QdtcAKdmCJuYpaEw06RVztQLQltJ5xIkGuix3RurqEnvOsKl/XJJquL2qamt5eUsMYq31O1vkZdx+zdBDeJc2nyMQAKMQ+zHTO+oYfBpkt0Ka42ffxhb7x4S/c8bOXfJ9FnjskQRiz6+7oZYkxiNxIhjkOYeK+hnaSgunt/t6KYus9GMf/ADz1KMu5ZyXsrmIGW1v4Bx2m8TSz9AFOGsMq8wUO1n7Oj2asJsI6I77DXe7rQDt1qKHirEJBWvwx6Q4qIcfPXQMKnT4Br5jSh3vdwc3wYsTJCVmgyVmg5f3xSo6GmfArFi7GXFrCIKdTb1+CghQw9YtD9avGzZSVYTfC/E7Qi4AJ3CENZfQ3rTT9U4koXeHEEkztxJnqZIBA5EzppG7LQ5C5jFw0BiUrouf3Z1uMhnzTfTz8BdIjn/iAa1CKYSPtBB6IpSLRPcBUwoDJdsFykbwkHvy2lnsjIglcL3W9uxlyuihQarx+osfcwCXW/esf4HIEN7nwtw60a3DiC+o0ZpGd/3ZiHGweA+PH0hLGmKCSm132WlRMpDre4FOt7jZzTmvV6zfyopZopoD2DZuQon0FpfO+f756lpxG0MwL0Xoh8ZCpKrVPKM9SlpTewgqhuRp2Tvex5dfAo6ckKOIsbhIoGDtS5XPNm5u7OH6+lzALfo66hQB6A=
+  - secure: PXYdgRuZIg5hT4OcGO1SUl/+/wWHDR5+Hr8lLRAj11u4md+RxuzOFLqReu5QEWWmvckycXy9BvPxQaa7K+cBRr81GK+toynYcnbCmzf+M6U2P3ZoAm3oTFX+FYSE8HhH9+yTfpcQyZYoUdcU32npEtt2+IFdUSrVgq3yGEG+qLPilpNWgL48Y3nk8VHrYbNqXKYksj10MWvodRsDhdnSZp3ff2T6jldvFyt3a3ydyqn25KfKvtyUxevOknGy4YTFNqM3w8qM+wBHS4ZXXTX2zXxTz3HShNFuo+1xsK27LdXT/FtGM7wNw8ZKfVsllaMhcq2ZHEHHMQSwG4ncQ5womVe6xdMP8v152CmxquSXwcWwfrxdIiT3rrIngREwtmz7eynIQSFnCBvm7cJiEm7xZgcMgfk6o4FweKma+BNHc86R2BpxMmydUtN1bb+F2ySzbE8lIm/dnCMc60wruXsG77V9ndgBcJ03DFK19w/xNArpBy+dTIp5AqvJZlWsbnzs56aYao/Y/TvncZZoWOQsxGnQJpIKDZVkJy4tlzevZDf9GYZhyDb/ffrRn+FkXL5kDgs+q5GhjW9Vn1vrkNp3gRGbyZRsyzuJo4GY3VM432MrVCTsyCvR057zeRBi6rd0a6vQSZefdIpfWBHo6Om6f5vV5VzmkMB6+a2oTUNP9gk=
+
+install:
+- make install_ci
+- make install
+
+script:
+- make test
+- make lint
+
+after_success:
+- if [ "$TRAVIS_BRANCH" != "master" ]; then SKIP_DOCKER=true; fi
+- test $SKIP_DOCKER || docker login -u "$DOCKER_USER" -p "$DOCKER_PASS" quay.io
+- test $SKIP_DOCKER || docker build -t quay.io/frankgreco/demogods -t quay.io/frankgreco/demogods:${TRAVIS_COMMIT} .
+- test $SKIP_DOCKER || docker push quay.io/frankgreco/demogods:${TRAVIS_COMMIT}
+- test $SKIP_DOCKER || docker push quay.io/frankgreco/demogods
