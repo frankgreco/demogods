@@ -1,0 +1,1 @@
+{"jobID":"015a5f4c-c98c-7b8e-367d-41394682a805","spec":{"type":"policy","cause":{"Message":"","User":"frankgreco \u003cfrankgreco@northwesternmutual.com\u003e"},"spec":{"default:deployment/demogods":{"add":null,"remove":{"automated":"true"}}}},"result":null}
