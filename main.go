@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/oklog/run"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -17,9 +16,8 @@ import (
 )
 
 func myHandler(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(100 * time.Millisecond)
 	logger := log.WithContext(r.Context())
-	if rand.Intn(100) < 80 {
+	if rand.Intn(100) < 20 {
 		metrics.Demos.WithLabelValues("fail").Inc()
 		logger.Warn("demo failed")
 		w.Write([]byte("You live demo will fail!"))
